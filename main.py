@@ -148,7 +148,7 @@ def get_lowest_review_words():
         property.add_rich_text("SYNONYMS",get_rich_text(page,"SYNONYMS"))
         property.add_rich_text("ANTONYMS",get_rich_text(page,"ANTONYMS"))
         property.add_number("Number of reviews",get_number(page,"Number of reviews"))
-        property.add_status("Status",get_status(page,"Status"))
+        property.add_status("Status","Learning")
         page_id = review_vocab.create_page(property)
         print(f"插入page成功：{page_id}")
 
