@@ -52,6 +52,10 @@ def main():
         print('exception ')
         traceback.print_exc() 
 
+    #同步需要复习的单词
+    get_lowest_review_words()
+    
+
 
 #从主词汇数据库里面，获取复习次数最少的10个
 def get_lowest_review_words():
@@ -157,5 +161,4 @@ def update_words_status_and_review_times(vocab,page,status,status_name,review_ti
 
 
 if __name__=='__main__':
-    # main()
-    get_lowest_review_words()
+    main()
