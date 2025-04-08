@@ -52,6 +52,13 @@ def get_date(page, prop_name):
 def get_number(page, prop_name):
     """获取数字类型属性"""
     return page["properties"].get(prop_name, {}).get("number")
+def get_status(page, prop_name):
+    """获取 Status 类型属性的值"""
+    prop = page["properties"].get(prop_name, {})
+    if prop.get("type") == "status" and "status" in prop:
+        return prop["status"].get("name")  # 返回状态名称
+    return None
+
 
 def get_url(page, prop_name):
     """获取URL类型属性"""

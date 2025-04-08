@@ -6,25 +6,34 @@ from .notion_client_manager import get_notion_client
 class NotionDataset:
     def __init__(self,database_id):
         self.client=get_notion_client()
-        self.database_id=database_id
+        self.database_id=database_id       
+
 
     #查询数据库中的页面信息
-    def query_page(self,filter_dict=None,page_size=100):
+    def query_page(self,filter_dict=None,sorts_dict=None,limit=None,page_size=100):
         has_more = True
         next_cursor = None
         all_results = []
+        if filter_dict is None: filter_dict={}
+        if sorts_dict is None: sorts_dict = []
 
         while has_more :
+            #如果有限制返回条件，直接用返回limit条
+            if limit is not None: page_size = int(limit)
             #调用接口查询数据
             response = self.client.databases.query(
                 database_id=self.database_id,  #数据库id
                 page_size=page_size,          #每页数量
                 start_cursor=next_cursor,  #分页游标
-                filter=filter_dict   #添加过滤条件
+                filter=filter_dict,   #添加过滤条件
+                sorts=sorts_dict #排序条件
             )
 
             #收集结果，这里给我们返回的是封装好了的 py数据结构对象list、map可以直接获取
             all_results.extend(response["results"])
+
+            #如果限制返回这里直接退出循环
+            if limit is not None : break
 
             #更新分页参数
             has_more = response["has_more"]
@@ -50,6 +59,13 @@ class NotionDataset:
         self.client.pages.update(
             page_id=page_id,
             properties=formatted_props
+        )
+
+    #删除页面
+    def delete_page(self,page_id):
+        self.client.pages.update(
+            page_id=page_id,
+            archived=True #归档，删除页面
         )
 
     def _format_properties(self, properties):
@@ -80,5 +96,7 @@ class NotionDataset:
             return {"number": float(data)}
         elif field_type == "url":
             return {"url": data}
+        elif field_type == "status":
+            return {"status": {"name":data} }
         else:
             raise ValueError(f"不支持的字段类型: {field_type}")

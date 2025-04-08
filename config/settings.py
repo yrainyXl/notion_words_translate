@@ -10,10 +10,9 @@ load_dotenv(BASE_DIR / "config" / ".env")
 
 class NotionConfig:
     NOTION_API_KEY = os.getenv("NOTION_API_KEY")
-    QUERY_DATABASE_ID = os.getenv("QUERY_DATABASE_ID")
-    INSERT_DATABASE_ID = os.getenv("INSERT_DATABASE_ID")
-
-
+    RAW_VOCAB_ID = os.getenv("RAW_VOCAB_ID")
+    MASTER_VOCAB_ID = os.getenv("MASTER_VOCAB_ID")
+    REVIEW_VOCAB_ID = os.getenv("REVIEW_VOCAB_ID")
 
 class DeepSeekConfig:
     #ai

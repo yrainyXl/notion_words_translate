@@ -24,6 +24,9 @@ class Properties(object):
 
     def add_url(self,field_name,field_value):
         self._add_field(field_name,field_value,'url')
+    
+    def add_status(self,field_name,field_value):
+        self._add_field(field_name,field_value,'status')
 
     def _add_field(self,field_name,field_value,field_type):
         self.fields[field_name]= (field_type,field_value)
