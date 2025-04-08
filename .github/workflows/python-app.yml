@@ -32,6 +32,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install notion-client
           pip install python-dotenv
+          pip install requests
 
       # 运行同步脚本
       - name: Execute sync
