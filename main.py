@@ -117,14 +117,14 @@ def get_lowest_review_words():
     #3、更新状态和复习次数
     for page in need_review_pages:
         print(get_title(page,'WORD'))
-        # update_words_status_and_review_times(
-        #     master_vocab,
-        #     page,
-        #     "Learning",
-        #     "Status",
-        #     int(get_number(page,"Number of reviews"))+1,
-        #     "Number of reviews"
-        # )
+        update_words_status_and_review_times(
+            master_vocab,
+            page,
+            "Learning",
+            "Status",
+            int(get_number(page,"Number of reviews"))+1,
+            "Number of reviews"
+        )
 
     #4、清除复习单词库
     review_vocab = NotionDataset(NotionConfig.REVIEW_VOCAB_ID)
