@@ -1,0 +1,44 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Daily Notion Sync
+
+on:
+  schedule:
+    - cron: '0 22 * * *'
+  workflow_dispatch:
+    
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    name: Sync
+    runs-on: ubuntu-latest
+    steps:
+      # 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 设置 Python 环境
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      # 安装依赖
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install notion-client
+
+      # 运行同步脚本
+      - name: Execute sync
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          RAW_VOCAB_ID: ${{ secrets.RAW_VOCAB_ID }}
+          MASTER_VOCAB_ID: ${{ secrets.MASTER_VOCAB_ID }}
+          REVIEW_VOCAB_ID: ${{ secrets.REVIEW_VOCAB_ID }}
+        run: |
+          python main.py
