@@ -1,0 +1,1 @@
+获取notion中单词数据库，调用deepseek的ai接口翻译后，写入notion数据库中
