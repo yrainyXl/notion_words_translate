@@ -19,3 +19,6 @@ class DeepSeekConfig:
     DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
     BASE_URL = "https://api.deepseek.com/v1"
     DEFAULT_TIMEOUT = 30
+
+class GithubConfig:
+    GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
