@@ -13,6 +13,9 @@ class NotionConfig:
     RAW_VOCAB_ID = os.getenv("RAW_VOCAB_ID")
     MASTER_VOCAB_ID = os.getenv("MASTER_VOCAB_ID")
     REVIEW_VOCAB_ID = os.getenv("REVIEW_VOCAB_ID")
+    RAW_AUDIO_ID=os.getenv("RAW_AUDIO_ID")
+    MASTER_AUDIO_ID=os.getenv("MASTER_AUDIO_ID")
+    REVIEW_AUDIO_ID=os.getenv("REVIEW_AUDIO_ID")
 
 class DeepSeekConfig:
     #ai
@@ -22,3 +25,5 @@ class DeepSeekConfig:
 
 class GithubConfig:
     GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+    AUDIO_REPO=os.getenv("AUDIO_REPO")
+    PERSON_NAME=os.getenv("PERSON_NAME")

@@ -41,8 +41,3 @@ def upload_to_github(file_path,repo_name,branch="main"):
         raise Exception(f"上传失败: {response.json()['message']}")
 
 
-def generate_unique_filename(text):
-    # 使用文本作为文件名，并添加时间戳
-    timestamp = str(int(time.time()))
-    filename = f"{text}_{timestamp}.mp3"
-    return filename
