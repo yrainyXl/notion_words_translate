@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from .notion_client_manager import get_notion_client
+from urllib.parse import unquote, urlparse
 
 class NotionDataset:
     def __init__(self,database_id):
@@ -14,6 +15,7 @@ class NotionDataset:
         has_more = True
         next_cursor = None
         all_results = []
+        # 为空的话，可以筛选titile不为空，all_words_filter= {"property": "WORD", "title": {"is_not_empty": True}}
         if filter_dict is None: filter_dict={}
         if sorts_dict is None: sorts_dict = []
 
@@ -98,5 +100,22 @@ class NotionDataset:
             return {"url": data}
         elif field_type == "status":
             return {"status": {"name":data} }
+        elif field_type in ["file", "attachment"]:
+            if isinstance(data, list):
+                return {"files": [_file_item(url) for url in data]}
+            else:
+                return {"files": [_file_item(str(data))]}
         else:
             raise ValueError(f"不支持的字段类型: {field_type}")
+def _extract_filename(url: str) -> str:
+    """从 URL 提取文件名"""
+    parsed = urlparse(unquote(url))
+    filename = parsed.path.split("/")[-1]
+    return filename or "unnamed_file"
+
+# 处理文件类型
+def _file_item(url: str) -> dict:
+    return {
+        "name": _extract_filename(url),
+        "external": {"url": url}
+    }

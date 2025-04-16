@@ -71,6 +71,13 @@ def get_formula(page, prop_name):
         formula_type = formula.get("type")
         return formula.get(formula_type)
     return None
+
+def get_file_path(page,prop_name):
+    """获取附件类型的url"""
+    files = page["properties"].get(prop_name,{}).get("files", [])
+    for file in files:
+        return file.get("external").get("url")
+    return None
 def print_pages(pages):
     for page in pages:
         print(f"\n--- Page ID: {page['id']} ---")

@@ -20,10 +20,13 @@ class Properties(object):
         self._add_field(field_name,bool(field_value),'checkbox')
 
     def add_number(self,field_name,field_value):
-        self._add_field(field_name,float(field_value),'number')
+        self._add_field(field_name,float(field_value) if field_value is not None else 0 ,'number')
 
     def add_url(self,field_name,field_value):
         self._add_field(field_name,field_value,'url')
+    
+    def add_file(self,field_name,field_value):
+        self._add_field(field_name,field_value,'file')
     
     def add_status(self,field_name,field_value):
         self._add_field(field_name,field_value,'status')

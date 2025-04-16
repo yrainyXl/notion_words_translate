@@ -11,10 +11,10 @@ def generate_audio(text, output_path):
     tts.save(output_path)
     return output_path
 
-def upload_to_github(file_path,repo_name,branch="main"):
+def upload_to_github(file_path,branch="main"):
     target_dir="docs/audios"
     file_name=os.path.basename(file_path)
-    api_url = f"https://api.github.com/repos/{repo_name}/contents/{target_dir}/{file_name}"
+    api_url = f"https://api.github.com/repos/{GithubConfig.PERSON_NAME}/{GithubConfig.AUDIO_REPO}/contents/{target_dir}/{file_name}"
     print(f"api_url: {api_url}")
 
     with open(file_path, "rb") as f:
@@ -36,7 +36,7 @@ def upload_to_github(file_path,repo_name,branch="main"):
     )
     if response.status_code == 201:
         print(f"文件上传成功: {response.json()['content']['download_url']}")
-        return f"https://{repo_name.split('/')[0]}.github.io/{repo_name.split('/')[1]}/audios/{os.path.basename(file_path)}"
+        return f"https://{GithubConfig.PERSON_NAME}.github.io/{GithubConfig.AUDIO_REPO}/audios/{os.path.basename(file_path)}"
     else:
         raise Exception(f"上传失败: {response.json()['message']}")
 

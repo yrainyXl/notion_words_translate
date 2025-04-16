@@ -14,70 +14,117 @@ from lib.notion_resultes_page import *
 2、转换为音频
 3、上传到github
 4、存储音频地址到notion中
-5、筛选句子推送到音频复习库
+5、更新句子库中的是否以转换
+6、筛选句子推送到音频复习库
 """
 
 base_path = ".\\tmp"
+review_size=10
 
 def text_to_audio():
+    master_audio = NotionDataset(NotionConfig.MASTER_AUDIO_ID)
+    raw_audio = NotionDataset(NotionConfig.RAW_AUDIO_ID)
+    review_audio = NotionDataset(NotionConfig.REVIEW_AUDIO_ID)
+
     try:
-        # 1、
-        raw_audio = NotionDataset(NotionConfig.RAW_AUDIO_ID)
-        filter_condition = {
-            "property": "to_audio",
-            "checkbox": {"equals":False}
-        }
-        pages = raw_audio.query_page(filter_condition)
+        # # 1、读取句子库中未转换的句子
+        # filter_condition = {
+        #     "property": "to_audio",
+        #     "checkbox": {"equals":False}
+        # }
+        # pages = raw_audio.query_page(filter_condition)
 
-        # 2、to_audio
-        index = 1
-        for pages_item in pages:
-            sentence = get_title(pages_item,'sentence')
-            print(f"{index} : {sentence}")
+        # # 2、to_audio
+        # index = 1
+        # for pages_item in pages:
+        #     sentence = get_title(pages_item,'sentence')
+        #     page_id = get_page_id(pages_item)
+        #     print(f"{index} : {sentence}\n")
+        #     index=index+1
             
-            file_name= generate_unique_filename()
-            local_output_dir=f"{base_path}{os.sep}{file_name}"
-            generate_audio(sentence,local_output_dir)
+        #     file_name= generate_unique_filename()
+        #     local_output_dir=f"{base_path}{os.sep}{file_name}"
+        #     generate_audio(sentence,local_output_dir)
+
+        #     #3、push to github
+        #     res_url = upload_to_github(local_output_dir)
+        #     print(f"上传github成功，访问地址：{res_url}")
+
+            
+        #     #4、存储音频地址到notion中
+        #     print(f"master_audio: {NotionConfig.MASTER_AUDIO_ID}")
+        #     fields = Properties()
+        #     fields.add_title('audio','audio')
+        #     fields.add_rich_text('sentence',sentence)
+        #     fields.add_number('Number of reviews',1)
+        #     fields.add_file('url',res_url)
+        #     master_audio.create_page(fields)
+        #     print(f'记录音频库成功，{sentence}')
+
+        #     #5、更新句子库为已转换
+        #     update_properties = Properties()
+        #     update_properties.add_checkbox('to_audio',True)
+        #     raw_audio.update_page(update_properties,page_id)
+        #     print(f"标记句子为已转换 : {sentence}")
 
 
-            #push to github
-            # upload_to_github(local_output_dir,)
+        #6、推送到review，推送之前清空review
+        all_words_filter= {"property": "index", "title": {"is_not_empty": True}}
+        delete_pages = review_audio.query_page(all_words_filter)
+        for page in delete_pages:
+            review_audio.delete_page(get_page_id(page))
+
+        print("\n清空review_audio库成功\n")
+
+        #查询需要复习的单词
+        sorts=[
+            {
+                "property":"Number of reviews",
+                "direction":"ascending"  #升序排序
+            }
+        ]
+        need_review_words_filter={
+            "or":[
+                {
+                    "property":"Status",
+                    "status":{
+                        "equals":"Not Learned"
+                    }
+                },
+                {
+                    "property":"Status",
+                    "status":{
+                        "equals":"Learning"
+                    }
+                }
+            ]
+        }
+        need_review_pages = master_audio.query_page(need_review_words_filter,sorts,review_size)
+        review_index=len(need_review_pages)
+        for page in need_review_pages:
+            sentence = get_rich_text(page,'sentence')
+            numbers = get_number(page,'Number of reviews')
+            properties = Properties()
+            properties.add_title('index',str(review_index))
+            properties.add_file('url',get_file_path(page,'url'))
+            properties.add_rich_text("sentence",sentence)
+            properties.add_number('Number of reviews',numbers)
+            review_audio.create_page(properties)
+            review_index=review_index-1
+            print(f"插入review_pag成功: {sentence}")
+
+            #更新master_audio中复习次数和状态
+            update_pro = Properties()
+            update_pro.add_status('Status','Learning')
+            update_pro.add_number('Number of reviews',numbers + 1 if numbers is not None else 1)
+            master_audio.update_page(update_pro,get_page_id(page))
+
+        print('\n更新master状态成功')
+
 
         
     except Exception as e:
         traceback.print_exc() 
-
-
-
-
-
-
-
-
-
-    # text = "Hello world! · I don't want the world to see me"
-    # base_path = ".\\tmp"
-    # file_name = generate_unique_filename("audio")
-    # output_path = f"{base_path}\\{file_name}"
-    # generate_audio(text, output_path)
-    # print(f"音频文件已保存到{output_path}")
-
-    # audio_github_url= upload_to_github(output_path,"yrainyXl/notion-audio-storage")
-    # # audio_github_url = "https://yrainyXl.github.io/notion-audio-storage/audios/audio_1744528225.mp3"
-    # print(f"音频文件已上传到GitHub仓库，链接为{audio_github_url}")
-
-
-    # # 更新audio notion块
-    # audio_block_id = "1d4a5d34222080f087aef6a9d3914803"
-    # res = NotionBlockClient().update_block(AudioBlock(audio_block_id,audio_github_url))
-    # print(res)
-
-    # # 更新link notion块
-    # paragraph_block_id = "1d4a5d342220807ea5ead1cd78027fac" 
-    # audio_db_id='https://www.notion.so/1d4a5d34222080d19317c11b0f617967'
-    # res = NotionBlockClient().update_block(LinkBlock(paragraph_block_id,audio_db_id))
-    # print(res)
-
 
 
 def generate_unique_filename():
