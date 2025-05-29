@@ -12,7 +12,7 @@ import traceback
 3、更新单词收集库中状态
 4、从单词库中，筛选单词，覆盖更新到复习单词库中
 """
-def translate_words():
+def translate():
     try:
         raw_vocab = NotionDataset(NotionConfig.RAW_VOCAB_ID)
         filter_condition= {
